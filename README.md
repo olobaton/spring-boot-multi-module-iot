@@ -1,1 +1,1 @@
-# spring-boot-security-jpa-jwt
+# spring-boot-multi-module-iot
