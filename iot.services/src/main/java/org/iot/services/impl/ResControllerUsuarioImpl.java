@@ -5,6 +5,7 @@ package org.iot.services.impl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,7 +51,7 @@ public class ResControllerUsuarioImpl implements ResControllerUsuario {
 		final String token = jwtTokenUtil.generateToken(user);
 		response.setUsuario(user.getUsername());
 		response.setToken(new JwtResponse(token).getToken());
-		return ResponseEntity.ok(response);		
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	private void authenticate(String username, String password) throws Exception {

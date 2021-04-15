@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +40,7 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 	private BCryptPasswordEncoder bcrypt;
 	
 	@GetMapping()
-	public List<ResPersona> obtener () {		
+	public ResponseEntity<?> obtener () {		
 		List<LogicPersonaDTO> logicpersonapo = null;
 		List<ResPersona> restpersonapo = new ArrayList<ResPersona>();		
 		logicpersonapo = logicpersona.findAll();
@@ -52,11 +54,11 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 				restpersonapo.add(rest);		
 			}			
 		}		
-		return restpersonapo;		
+		return new ResponseEntity<>(restpersonapo, HttpStatus.OK);
 	}
 	
 	@PostMapping()
-	public ResPersona crear (@RequestBody ResPersona p) {
+	public ResponseEntity<?> crear (@RequestBody ResPersona p) {
 		ResPersona restpersonapo = new ResPersona();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
 		
@@ -68,12 +70,12 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 		if (logicpersonapo != null) {
 			restpersonapo.setId(logicpersonapo.getId());
 			restpersonapo.setNombre(logicpersonapo.getNombre());
-		}		
-		return restpersonapo;		
+		}	
+		return new ResponseEntity<>(restpersonapo, HttpStatus.OK);
 	}
 	
-	@PutMapping()
-	public ResPersona modificar (@RequestBody ResPersona p) {
+	@PutMapping(value = "/{id_personar}")
+	public ResponseEntity<?> modificar (@RequestBody ResPersona p, @PathVariable("id_personar") Integer id) {
 		ResPersona restpersonapo = new ResPersona();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
 		
@@ -84,13 +86,13 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 			restpersonapo.setId(logicpersonapo.getId());
 			restpersonapo.setNombre(logicpersonapo.getNombre());
 		}		
-		return restpersonapo;		
+		return new ResponseEntity<>(restpersonapo, HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public void eliminar (@PathVariable("id") Integer id) {
-			
+	public ResponseEntity<?> eliminar (@PathVariable("id") Integer id) {
 		logicpersona.eliminar(id);
+		return null;
 	}
 	
 
