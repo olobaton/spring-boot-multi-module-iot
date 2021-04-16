@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Transactional(readOnly = true)
-public interface DataAccessPersona extends JpaRepository<DataPersonaPO, Integer>{
+public interface DataAccessPersona extends JpaRepository<DataPersonaPO, Integer> {
 	
 	@Query("select p from DataPersonaPO p INNER JOIN p.usuario WHERE p.id =:id")
     public List<DataPersonaPO> find(@Param("id") Integer id);
