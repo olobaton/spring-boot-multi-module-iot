@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Objects;
+
 import org.iot.services.ResControllerUsuario;
 import org.iot.services.config.jwt.JwtTokenUtil;
 import org.iot.services.model.JwtResponse;
@@ -55,6 +58,8 @@ public class ResControllerUsuarioImpl implements ResControllerUsuario {
 	}
 	
 	private void authenticate(String username, String password) throws Exception {
+		Objects.requireNonNull(username);
+		Objects.requireNonNull(password);
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (DisabledException e) {

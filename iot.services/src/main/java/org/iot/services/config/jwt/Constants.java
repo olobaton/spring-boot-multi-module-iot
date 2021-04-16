@@ -13,7 +13,7 @@ public enum Constants {
 	HEADER_AUTHORIZACION_KEY ("Authorization"),
 	TOKEN_BEARER_PREFIX ("Bearer "),
 	
-	SUPER_SECRET_KEY ("1234");
+	SUPER_SECRET_KEY ("olobaton");
 
 	private String id;
 	
