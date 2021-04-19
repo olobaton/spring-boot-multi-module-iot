@@ -12,6 +12,7 @@ import org.iot.business.dataaccess.DataAccessPersona;
 import org.iot.business.logic.LogicPersona;
 import org.iot.business.model.dataaccess.DataPersonaPO;
 import org.iot.business.model.dataaccess.UsuarioPO;
+import org.iot.business.model.exception.NoSuchElementFoundException;
 import org.iot.business.model.logic.LogicPersonaDTO;
 
 /**
@@ -48,34 +49,56 @@ public class LogicPersonaImpl implements LogicPersona {
 		DataPersonaPO datapersonapo = new DataPersonaPO();
 		UsuarioPO usuaripo = new UsuarioPO();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
-		usuaripo.setPassword(p.getPassword());
-		usuaripo.setUsuario(p.getUsuario());
-		datapersonapo.setUsuario(usuaripo);
-		datapersonapo.setId(p.getId());
-		datapersonapo.setNombre(p.getNombre());
-		datapersonapo = dataaccesspersona.save(datapersonapo);
-		if(datapersonapo != null) {			
-			logicpersonapo.setId(datapersonapo.getId());
-			logicpersonapo.setNombre(datapersonapo.getNombre());
+		
+		try {
+			DataPersonaPO existingpersona = dataaccesspersona.findCustomByUserName(p.getUsuario());
+			if (existingpersona == null) {
+				usuaripo.setPassword(p.getPassword());
+				usuaripo.setUsuario(p.getUsuario());
+				datapersonapo.setUsuario(usuaripo);
+				datapersonapo.setNombre(p.getNombre());
+				datapersonapo = dataaccesspersona.saveAndFlush(datapersonapo);
+				if(datapersonapo != null) {			
+					logicpersonapo.setId(datapersonapo.getId());
+					logicpersonapo.setNombre(datapersonapo.getNombre());
+				}				
+			} else  {
+				throw new NoSuchElementFoundException("User exists :" + p.getUsuario());
+			}
+			
+		} catch (Exception e) {
+			throw new NoSuchElementFoundException("Error", e.getMessage());
 		}
 		return logicpersonapo;
 	}
 	
 	public LogicPersonaDTO modificar(LogicPersonaDTO p) {
+		
 		DataPersonaPO datapersonapo = new DataPersonaPO();
-		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
-		datapersonapo.setId(p.getId());
-		datapersonapo.setNombre(p.getNombre());
-		datapersonapo = dataaccesspersona.save(datapersonapo);
-		if(datapersonapo != null) {			
-			logicpersonapo.setId(datapersonapo.getId());
-			logicpersonapo.setNombre(datapersonapo.getNombre());
+		LogicPersonaDTO logicpersonadto = new LogicPersonaDTO();
+		try {
+			DataPersonaPO existingpersona = dataaccesspersona.findCustomById(p.getId())
+					.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + p.getId()));
+			existingpersona.setNombre(p.getNombre());
+			datapersonapo = dataaccesspersona.saveAndFlush(existingpersona);
+			if(datapersonapo != null) {			
+				logicpersonadto.setId(datapersonapo.getId());
+				logicpersonadto.setNombre(datapersonapo.getNombre());
+			}			
+		} catch (Exception e) {
+			throw new NoSuchElementFoundException("Error", e.getMessage());
 		}
-		return logicpersonapo;
+		return logicpersonadto;
 	}
 	
-	public void eliminar(Integer id) {
-		dataaccesspersona.deleteById(id);
+	public void eliminar(Integer id) throws NoSuchElementFoundException {
+		try {
+			DataPersonaPO existingpersona = dataaccesspersona.findCustomById(id)
+					.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + id));
+			dataaccesspersona.deleteById(existingpersona.getId());			
+		} catch (Exception e) {
+			throw new NoSuchElementFoundException("Error", e.getMessage());
+		}
 	}
 
 }

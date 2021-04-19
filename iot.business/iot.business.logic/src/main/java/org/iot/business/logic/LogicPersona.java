@@ -4,6 +4,8 @@
 package org.iot.business.logic;
 
 import java.util.List;
+
+import org.iot.business.model.exception.NoSuchElementFoundException;
 import org.iot.business.model.logic.LogicPersonaDTO;
 
 
@@ -19,7 +21,7 @@ public interface LogicPersona {
 	
 	public LogicPersonaDTO save(LogicPersonaDTO p);
 	
-	public void eliminar(Integer id);
+	public void eliminar(Integer id) throws NoSuchElementFoundException;
 	
 	public LogicPersonaDTO modificar(LogicPersonaDTO p);
 

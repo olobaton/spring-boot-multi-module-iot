@@ -62,7 +62,6 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 		ResPersona restpersonapo = new ResPersona();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
 		
-		logicpersonapo.setId(p.getId());
 		logicpersonapo.setNombre(p.getNombre());	
 		logicpersonapo.setUsuario(p.getUsuario());
 		logicpersonapo.setPassword(bcrypt.encode(p.getPassword()));
@@ -79,9 +78,9 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 		ResPersona restpersonapo = new ResPersona();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
 		
-		logicpersonapo.setId(p.getId());
+		logicpersonapo.setId(id);
 		logicpersonapo.setNombre(p.getNombre());		
-		logicpersonapo = logicpersona.save(logicpersonapo);
+		logicpersonapo = logicpersona.modificar(logicpersonapo);
 		if (logicpersonapo != null) {
 			restpersonapo.setId(logicpersonapo.getId());
 			restpersonapo.setNombre(logicpersonapo.getNombre());
@@ -92,7 +91,7 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<?> eliminar (@PathVariable("id") Integer id) {
 		logicpersona.eliminar(id);
-		return null;
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 
