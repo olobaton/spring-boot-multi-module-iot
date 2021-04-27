@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.iot.business.logic.LogicPersona;
 import org.iot.business.model.logic.LogicPersonaDTO;
-import org.iot.services.ResControllerPersona;
-import org.iot.services.model.ResPersona;
+import org.iot.services.RestControllerPerson;
+import org.iot.services.model.PersonRequest;
+import org.iot.services.model.PersonResponse;
 
 /**
  * @author loboo
@@ -30,7 +31,7 @@ import org.iot.services.model.ResPersona;
 
 @RestController
 @RequestMapping("/persona")
-public class RestControllerPersonaImpl implements ResControllerPersona {
+public class RestControllerPersonImpl implements RestControllerPerson {
 	
 	
 	@Autowired
@@ -42,15 +43,14 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 	@GetMapping()
 	public ResponseEntity<?> obtener () {		
 		List<LogicPersonaDTO> logicpersonapo = null;
-		List<ResPersona> restpersonapo = new ArrayList<ResPersona>();		
+		List<PersonResponse> restpersonapo = new ArrayList<PersonResponse>();		
 		logicpersonapo = logicpersona.findAll();
 		if (logicpersonapo != null && logicpersonapo.size() != 0) {
 			for(LogicPersonaDTO obj: logicpersonapo) {
-				ResPersona rest = new ResPersona();
+				PersonResponse rest = new PersonResponse();
 				rest.setId(obj.getId());
 				rest.setNombre(obj.getNombre());
 				rest.setUsuario(obj.getUsuario());
-				rest.setPassword(obj.getPassword());
 				restpersonapo.add(rest);		
 			}			
 		}		
@@ -58,8 +58,8 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<?> crear (@RequestBody ResPersona p) {
-		ResPersona restpersonapo = new ResPersona();
+	public ResponseEntity<?> crear (@RequestBody PersonRequest p) throws Exception {
+		PersonResponse restpersonapo = new PersonResponse();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
 		
 		logicpersonapo.setNombre(p.getNombre());	
@@ -69,27 +69,30 @@ public class RestControllerPersonaImpl implements ResControllerPersona {
 		if (logicpersonapo != null) {
 			restpersonapo.setId(logicpersonapo.getId());
 			restpersonapo.setNombre(logicpersonapo.getNombre());
+			restpersonapo.setUsuario(logicpersonapo.getUsuario());
 		}	
-		return new ResponseEntity<>(restpersonapo, HttpStatus.OK);
+		return new ResponseEntity<>(restpersonapo, HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value = "/{id_personar}")
-	public ResponseEntity<?> modificar (@RequestBody ResPersona p, @PathVariable("id_personar") Integer id) {
-		ResPersona restpersonapo = new ResPersona();
+	public ResponseEntity<?> modificar (@RequestBody PersonRequest p, @PathVariable("id_personar") Integer id) throws Exception {
+		PersonResponse restpersonapo = new PersonResponse();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
 		
 		logicpersonapo.setId(id);
 		logicpersonapo.setNombre(p.getNombre());		
+		logicpersonapo.setUsuario(p.getUsuario());
 		logicpersonapo = logicpersona.modificar(logicpersonapo);
 		if (logicpersonapo != null) {
 			restpersonapo.setId(logicpersonapo.getId());
 			restpersonapo.setNombre(logicpersonapo.getNombre());
+			restpersonapo.setUsuario(logicpersonapo.getUsuario());
 		}		
 		return new ResponseEntity<>(restpersonapo, HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<?> eliminar (@PathVariable("id") Integer id) {
+	public ResponseEntity<?> eliminar (@PathVariable("id") Integer id) throws Exception {
 		logicpersona.eliminar(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

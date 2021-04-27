@@ -19,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.jsonwebtoken.SignatureException;
+
 import java.util.Objects;
 
-import org.iot.services.ResControllerUsuario;
+import org.iot.services.RestControllerAuth;
 import org.iot.services.config.jwt.JwtTokenUtil;
 import org.iot.services.model.JwtResponse;
-import org.iot.services.model.ResUsuario;
+import org.iot.services.model.UserRequest;
 import org.iot.services.service.UserService;
 
 
@@ -34,9 +36,9 @@ import org.iot.services.service.UserService;
  */
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/auth")
 @CrossOrigin
-public class ResControllerUsuarioImpl implements ResControllerUsuario {
+public class RestControllerAuthImpl implements RestControllerAuth {
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
@@ -48,14 +50,17 @@ public class ResControllerUsuarioImpl implements ResControllerUsuario {
 	private AuthenticationManager authenticationManager;
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> auth (@RequestBody ResUsuario p) throws Exception {
-		ResUsuario response = new ResUsuario();
-		authenticate(p.getUsuario(), p.getPassword());
-		final UserDetails user = userDetailsService.loadUserByUsername(p.getUsuario());
-		final String token = jwtTokenUtil.generateToken(user);
-		response.setUsuario(user.getUsername());
-		response.setToken(new JwtResponse(token).getToken());			
-		return new ResponseEntity<>(response, HttpStatus.OK);
+	public ResponseEntity<?> auth (@RequestBody UserRequest p) throws Exception {
+		String token = null;
+		try {
+			authenticate(p.getUsuario(), p.getPassword());
+			final UserDetails user = userDetailsService.loadUserByUsername(p.getUsuario());
+			token = jwtTokenUtil.generateToken(user);
+			
+		} catch (Exception e) {
+			new Exception("uncontrolled error ", e);
+		}		
+		return new ResponseEntity<>(new JwtResponse(token), HttpStatus.OK);
 	}
 	
 	private void authenticate(String username, String password) throws Exception {

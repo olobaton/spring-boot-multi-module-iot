@@ -6,12 +6,15 @@ package org.iot.business.logic.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.NonUniqueResultException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.iot.business.dataaccess.DataAccessPersona;
 import org.iot.business.logic.LogicPersona;
 import org.iot.business.model.dataaccess.DataPersonaPO;
 import org.iot.business.model.dataaccess.UsuarioPO;
+import org.iot.business.model.exception.ElementAlreadyExistsException;
 import org.iot.business.model.exception.NoSuchElementFoundException;
 import org.iot.business.model.logic.LogicPersonaDTO;
 
@@ -45,7 +48,7 @@ public class LogicPersonaImpl implements LogicPersona {
 		return list;
 	}
 	
-	public LogicPersonaDTO save(LogicPersonaDTO p) {
+	public LogicPersonaDTO save(LogicPersonaDTO p) throws Exception {
 		DataPersonaPO datapersonapo = new DataPersonaPO();
 		UsuarioPO usuaripo = new UsuarioPO();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
@@ -61,43 +64,62 @@ public class LogicPersonaImpl implements LogicPersona {
 				if(datapersonapo != null) {			
 					logicpersonapo.setId(datapersonapo.getId());
 					logicpersonapo.setNombre(datapersonapo.getNombre());
+					logicpersonapo.setUsuario(datapersonapo.getUsuario().getUsuario());
 				}				
 			} else  {
-				throw new NoSuchElementFoundException("User exists :" + p.getUsuario());
+				throw new ElementAlreadyExistsException("User exists :" + p.getUsuario());
 			}
 			
+		} catch (ElementAlreadyExistsException e) {
+			throw new ElementAlreadyExistsException("controlled error", e.getMessage());
 		} catch (Exception e) {
-			throw new NoSuchElementFoundException("Error", e.getMessage());
+			throw new Exception("uncontrolled error", e);
 		}
 		return logicpersonapo;
 	}
 	
-	public LogicPersonaDTO modificar(LogicPersonaDTO p) {
+	public LogicPersonaDTO modificar(LogicPersonaDTO p) throws Exception {
 		
 		DataPersonaPO datapersonapo = new DataPersonaPO();
 		LogicPersonaDTO logicpersonadto = new LogicPersonaDTO();
+		UsuarioPO userpo;
 		try {
-			DataPersonaPO existingpersona = dataaccesspersona.findCustomById(p.getId())
-					.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + p.getId()));
-			existingpersona.setNombre(p.getNombre());
-			datapersonapo = dataaccesspersona.saveAndFlush(existingpersona);
-			if(datapersonapo != null) {			
-				logicpersonadto.setId(datapersonapo.getId());
-				logicpersonadto.setNombre(datapersonapo.getNombre());
-			}			
+			DataPersonaPO replicateduser = dataaccesspersona.findCustomByUserName(p.getUsuario());
+			if (replicateduser == null) {
+				DataPersonaPO existingpersona = dataaccesspersona.findCustomById(p.getId())
+						.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + p.getId()));
+				userpo = existingpersona.getUsuario();
+				userpo.setUsuario(p.getUsuario());
+				existingpersona.setNombre(p.getNombre());
+				existingpersona.setUsuario(userpo);
+				datapersonapo = dataaccesspersona.saveAndFlush(existingpersona);
+				if(datapersonapo != null) {			
+					logicpersonadto.setId(datapersonapo.getId());
+					logicpersonadto.setNombre(datapersonapo.getNombre());
+					logicpersonadto.setUsuario(datapersonapo.getUsuario().getUsuario());
+				}				
+			} else {
+				throw new ElementAlreadyExistsException("User exists :" + p.getUsuario());
+			}	
+		} catch (NoSuchElementFoundException e) {
+			throw new NoSuchElementFoundException("controlled error", e.getMessage());
+		} catch (ElementAlreadyExistsException e) {
+			throw new ElementAlreadyExistsException("controlled error", e.getMessage());
 		} catch (Exception e) {
-			throw new NoSuchElementFoundException("Error", e.getMessage());
+			throw new Exception("uncontrolled error", e);
 		}
 		return logicpersonadto;
 	}
 	
-	public void eliminar(Integer id) throws NoSuchElementFoundException {
+	public void eliminar(Integer id) throws Exception {
 		try {
 			DataPersonaPO existingpersona = dataaccesspersona.findCustomById(id)
 					.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + id));
 			dataaccesspersona.deleteById(existingpersona.getId());			
+		} catch (NoSuchElementFoundException e) {
+			throw new NoSuchElementFoundException("controlled error", e.getMessage());
 		} catch (Exception e) {
-			throw new NoSuchElementFoundException("Error", e.getMessage());
+			throw new Exception("uncontrolled error", e);
 		}
 	}
 

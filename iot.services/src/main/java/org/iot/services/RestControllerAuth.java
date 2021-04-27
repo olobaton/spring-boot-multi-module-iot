@@ -7,14 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-import org.iot.services.model.ResUsuario;
+import org.iot.services.model.UserRequest;
 
 /**
  * @author loboo
  *
  */
-public interface ResControllerUsuario {
+public interface RestControllerAuth {
 	
-	public ResponseEntity<?> auth (@RequestBody ResUsuario p) throws Exception;
+	public ResponseEntity<?> auth (@RequestBody UserRequest p) throws Exception;
 
 }

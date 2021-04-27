@@ -55,4 +55,5 @@ public class DataPersonaPO {
 	public void setUsuario(UsuarioPO usuario) {
 		this.usuario = usuario;
 	}
+	
 }

@@ -15,6 +15,7 @@ import org.iot.business.model.exception.NoSuchElementFoundException;
 
 import java.util.Date;
 
+import org.iot.business.model.exception.ElementAlreadyExistsException;
 import org.iot.business.model.exception.ErrorDetails;
 
 /**
@@ -25,31 +26,37 @@ import org.iot.business.model.exception.ErrorDetails;
 public class GlobalExceptionHandler {
 
 	// handling specific exception
+	@ExceptionHandler(ElementAlreadyExistsException.class)
+	public ResponseEntity<?> resourceAlreadyExistsHandling(ElementAlreadyExistsException exception, WebRequest request) {
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase(),
+				exception.getError(), request.getDescription(false));
+		return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+	}
+
+	// handling specific exception
 	@ExceptionHandler(NoSuchElementFoundException.class)
-	public ResponseEntity<?> resourceNotFoundHandling(NoSuchElementFoundException exception, WebRequest request){
-		ErrorDetails errorDetails = 
-				new ErrorDetails(new Date(), HttpStatus.NOT_FOUND.value()
-						, exception.getMessage() , exception.getError() ,  request.getDescription(false));
+	public ResponseEntity<?> resourceNotFoundHandling(NoSuchElementFoundException exception, WebRequest request) {
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase(),
+				exception.getError(), request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 	}
 
 	// handling specific exception
-	@ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentNotValidException.class,
-	      HttpRequestMethodNotSupportedException.class})
-	public ResponseEntity<?> badrequest(Exception exception, WebRequest request){
-		ErrorDetails errorDetails = 
-				new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST.value()
-						, HttpStatus.BAD_REQUEST.getReasonPhrase() , exception.getMessage() ,  request.getDescription(false));
+	@ExceptionHandler({ HttpMessageNotReadableException.class, MethodArgumentNotValidException.class,
+			HttpRequestMethodNotSupportedException.class })
+	public ResponseEntity<?> badrequest(Exception exception, WebRequest request) {
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST.value(),
+				HttpStatus.BAD_REQUEST.getReasonPhrase(), exception.getMessage(), request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
 	}
 
 	// handling global exception
-	
+
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<?> globalExceptionHandling(Exception exception, WebRequest request){
-		ErrorDetails errorDetails = 
-				new ErrorDetails(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value()
-						, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() , exception.getMessage() ,  request.getDescription(false));
+	public ResponseEntity<?> globalExceptionHandling(Exception exception, WebRequest request) {
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
+				HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), exception.getMessage(),
+				request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
