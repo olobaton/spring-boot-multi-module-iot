@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.jsonwebtoken.SignatureException;
-
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.iot.business.model.exception.ServiceException;
 import org.iot.services.RestControllerAuth;
 import org.iot.services.config.jwt.JwtTokenUtil;
 import org.iot.services.model.JwtResponse;
@@ -49,8 +50,13 @@ public class RestControllerAuthImpl implements RestControllerAuth {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
+	private static final Logger logger = LogManager.getLogger(RestControllerAuthImpl.class);
+	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> auth (@RequestBody UserRequest p) throws Exception {
+	public ResponseEntity<?> auth (@RequestBody UserRequest p) {
+		
+		logger.info("URL: /auth - POST - Method auth // @RequestBody");
+		
 		String token = null;
 		try {
 			authenticate(p.getUsuario(), p.getPassword());
@@ -58,7 +64,7 @@ public class RestControllerAuthImpl implements RestControllerAuth {
 			token = jwtTokenUtil.generateToken(user);
 			
 		} catch (Exception e) {
-			new Exception("uncontrolled error ", e);
+			new ServiceException("uncontrolled error - auth", e);
 		}		
 		return new ResponseEntity<>(new JwtResponse(token), HttpStatus.OK);
 	}

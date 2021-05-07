@@ -6,53 +6,58 @@ package org.iot.business.logic.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.NonUniqueResultException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.stereotype.Service;
 import org.iot.business.dataaccess.DataAccessPersona;
 import org.iot.business.logic.LogicPersona;
 import org.iot.business.model.dataaccess.DataPersonaPO;
 import org.iot.business.model.dataaccess.UsuarioPO;
 import org.iot.business.model.exception.ElementAlreadyExistsException;
 import org.iot.business.model.exception.NoSuchElementFoundException;
+import org.iot.business.model.exception.ServiceException;
 import org.iot.business.model.logic.LogicPersonaDTO;
 
 /**
  * @author loboo
  *
  */
-@Component
+@Service
 public class LogicPersonaImpl implements LogicPersona {
-	
+
 	@Autowired
 	private DataAccessPersona dataaccesspersona;
-	
-	ArrayList<LogicPersonaDTO> list = null;
-	
+
 	@Override
-	public List<LogicPersonaDTO> findAll() {
+	public List<LogicPersonaDTO> findAll() throws ServiceException {
 		LogicPersonaDTO logicpersonapo = null;
+		ArrayList<LogicPersonaDTO> list = null;
 		list = new ArrayList<LogicPersonaDTO>();
-		List<DataPersonaPO> listadata= dataaccesspersona.findAll();
-		if(listadata.size() != 0) {
-			for (DataPersonaPO obj: listadata) {
-				logicpersonapo = new LogicPersonaDTO();
-				logicpersonapo.setId(obj.getId());
-				logicpersonapo.setNombre(obj.getNombre());
-				logicpersonapo.setUsuario(obj.getUsuario().getUsuario());
-				logicpersonapo.setPassword("Confidencial");
-				list.add(logicpersonapo);				
-			}			
+		try {
+			List<DataPersonaPO> listadata = dataaccesspersona.findAll();
+			if (listadata.size() != 0) {
+				for (DataPersonaPO obj : listadata) {
+					logicpersonapo = new LogicPersonaDTO();
+					logicpersonapo.setId(obj.getId());
+					logicpersonapo.setNombre(obj.getNombre());
+					logicpersonapo.setUsuario(obj.getUsuario().getUsuario());
+					logicpersonapo.setPassword("Confidencial");
+					list.add(logicpersonapo);
+				}
+			}
+
+		} catch (Exception e) {
+			throw new ServiceException("uncontrolled error - finAll", e, LogicPersonaImpl.class);
 		}
 		return list;
 	}
-	
-	public LogicPersonaDTO save(LogicPersonaDTO p) throws Exception {
+
+	@Override
+	public LogicPersonaDTO save(LogicPersonaDTO p) throws ServiceException {
 		DataPersonaPO datapersonapo = new DataPersonaPO();
 		UsuarioPO usuaripo = new UsuarioPO();
 		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
-		
+
 		try {
 			DataPersonaPO existingpersona = dataaccesspersona.findCustomByUserName(p.getUsuario());
 			if (existingpersona == null) {
@@ -61,25 +66,28 @@ public class LogicPersonaImpl implements LogicPersona {
 				datapersonapo.setUsuario(usuaripo);
 				datapersonapo.setNombre(p.getNombre());
 				datapersonapo = dataaccesspersona.saveAndFlush(datapersonapo);
-				if(datapersonapo != null) {			
+				if (datapersonapo != null) {
 					logicpersonapo.setId(datapersonapo.getId());
 					logicpersonapo.setNombre(datapersonapo.getNombre());
 					logicpersonapo.setUsuario(datapersonapo.getUsuario().getUsuario());
-				}				
-			} else  {
+				}
+			} else {
 				throw new ElementAlreadyExistsException("User exists :" + p.getUsuario());
 			}
-			
+
 		} catch (ElementAlreadyExistsException e) {
-			throw new ElementAlreadyExistsException("controlled error", e.getMessage());
+			throw new ElementAlreadyExistsException("controlled error  - save", e.getMessage(), LogicPersonaImpl.class);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			throw new ServiceException("return a unique result: 2  - save", e, LogicPersonaImpl.class);
 		} catch (Exception e) {
-			throw new Exception("uncontrolled error", e);
+			throw new ServiceException("uncontrolled error - save", e, LogicPersonaImpl.class);
 		}
 		return logicpersonapo;
 	}
-	
-	public LogicPersonaDTO modificar(LogicPersonaDTO p) throws Exception {
-		
+
+	@Override
+	public LogicPersonaDTO modificar(LogicPersonaDTO p) throws ServiceException {
+
 		DataPersonaPO datapersonapo = new DataPersonaPO();
 		LogicPersonaDTO logicpersonadto = new LogicPersonaDTO();
 		UsuarioPO userpo;
@@ -93,33 +101,36 @@ public class LogicPersonaImpl implements LogicPersona {
 				existingpersona.setNombre(p.getNombre());
 				existingpersona.setUsuario(userpo);
 				datapersonapo = dataaccesspersona.saveAndFlush(existingpersona);
-				if(datapersonapo != null) {			
+				if (datapersonapo != null) {
 					logicpersonadto.setId(datapersonapo.getId());
 					logicpersonadto.setNombre(datapersonapo.getNombre());
 					logicpersonadto.setUsuario(datapersonapo.getUsuario().getUsuario());
-				}				
+				}
 			} else {
 				throw new ElementAlreadyExistsException("User exists :" + p.getUsuario());
-			}	
+			}
 		} catch (NoSuchElementFoundException e) {
-			throw new NoSuchElementFoundException("controlled error", e.getMessage());
+			throw new NoSuchElementFoundException("controlled error - modify", e.getMessage(), LogicPersonaImpl.class);
 		} catch (ElementAlreadyExistsException e) {
-			throw new ElementAlreadyExistsException("controlled error", e.getMessage());
+			throw new ElementAlreadyExistsException("controlled error - modify", e.getMessage(), LogicPersonaImpl.class);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			throw new ServiceException("return a unique result: 2 - modify ", e, LogicPersonaImpl.class);
 		} catch (Exception e) {
-			throw new Exception("uncontrolled error", e);
+			throw new ServiceException("uncontrolled error - modify ", e, LogicPersonaImpl.class);
 		}
 		return logicpersonadto;
 	}
-	
-	public void eliminar(Integer id) throws Exception {
+
+	@Override
+	public void eliminar(Integer id) throws ServiceException {
 		try {
 			DataPersonaPO existingpersona = dataaccesspersona.findCustomById(id)
 					.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + id));
-			dataaccesspersona.deleteById(existingpersona.getId());			
+			dataaccesspersona.deleteById(existingpersona.getId());
 		} catch (NoSuchElementFoundException e) {
-			throw new NoSuchElementFoundException("controlled error", e.getMessage());
+			throw new NoSuchElementFoundException("controlled error - delete", e.getMessage(), LogicPersonaImpl.class);
 		} catch (Exception e) {
-			throw new Exception("uncontrolled error", e);
+			throw new ServiceException("uncontrolled error - delete", e, LogicPersonaImpl.class);
 		}
 	}
 

@@ -20,10 +20,12 @@ public class NoSuchElementFoundException extends RuntimeException{
 	
 	private String message;
 	private String error; 
+	private Class<?> clazz;
 	
-	public NoSuchElementFoundException(String message, String error) {
+	public NoSuchElementFoundException(String message, String error,  Class<?> clazz) {
 		this.message = message;
 		this.error = error;
+		this.clazz = clazz;
 	}
 	
 	public NoSuchElementFoundException(String message) {
@@ -49,7 +51,14 @@ public class NoSuchElementFoundException extends RuntimeException{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+
+	public Class<?> getClazz() {
+		return clazz;
+	}
+
+	public void setClazz(Class<?> clazz) {
+		this.clazz = clazz;
+	}	
 	
 
 }

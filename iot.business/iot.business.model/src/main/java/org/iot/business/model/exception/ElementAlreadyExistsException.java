@@ -19,11 +19,13 @@ public class ElementAlreadyExistsException  extends RuntimeException{
 	
 	private String message;
 	private String error; 
+	private Class<?> clazz;
 	
-	public ElementAlreadyExistsException(String message, String error) {
+	public ElementAlreadyExistsException(String message, String error, Class<?> clazz) {
 		super();
 		this.message = message;
 		this.error = error;
+		this.clazz = clazz;
 	}
 	
 	public ElementAlreadyExistsException(String message) {
@@ -45,6 +47,14 @@ public class ElementAlreadyExistsException  extends RuntimeException{
 
 	public void setError(String error) {
 		this.error = error;
+	}
+
+	public Class<?> getClazz() {
+		return clazz;
+	}
+
+	public void setClazz(Class<?> clazz) {
+		this.clazz = clazz;
 	}
 	
 	

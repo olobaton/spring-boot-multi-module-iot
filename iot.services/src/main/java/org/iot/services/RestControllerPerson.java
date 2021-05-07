@@ -17,7 +17,7 @@ import org.iot.services.model.PersonRequest;
  */
 public interface RestControllerPerson {
 	
-	public ResponseEntity<?> obtener ();
+	public ResponseEntity<?> obtener () throws Exception;;
 	
 	public ResponseEntity<?> crear (@RequestBody PersonRequest p) throws Exception;
 	
