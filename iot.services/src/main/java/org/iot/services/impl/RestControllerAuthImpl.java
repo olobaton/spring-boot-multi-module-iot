@@ -53,7 +53,7 @@ public class RestControllerAuthImpl implements RestControllerAuth {
 	private static final Logger logger = LogManager.getLogger(RestControllerAuthImpl.class);
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> auth (@RequestBody UserRequest p) {
+	public ResponseEntity<?> auth (@RequestBody UserRequest p) throws ServiceException {
 		
 		logger.info("URL: /auth - POST - Method auth // @RequestBody");
 		
@@ -63,21 +63,21 @@ public class RestControllerAuthImpl implements RestControllerAuth {
 			final UserDetails user = userDetailsService.loadUserByUsername(p.getUsuario());
 			token = jwtTokenUtil.generateToken(user);
 			
-		} catch (Exception e) {
-			new ServiceException("uncontrolled error - auth", e);
+		} catch (ServiceException e) {
+			throw new ServiceException("uncontrolled error - auth", e);
 		}		
 		return new ResponseEntity<>(new JwtResponse(token), HttpStatus.OK);
 	}
 	
-	private void authenticate(String username, String password) throws Exception {
+	private void authenticate(String username, String password) throws ServiceException {
 		Objects.requireNonNull(username);
 		Objects.requireNonNull(password);
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
+			throw new ServiceException("USER_DISABLED", e);
 		} catch (BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
+			throw new ServiceException("INVALID_CREDENTIALS", e);
 		}
 	}
 

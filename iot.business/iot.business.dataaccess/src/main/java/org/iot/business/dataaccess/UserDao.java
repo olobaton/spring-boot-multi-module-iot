@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import org.iot.business.model.dataaccess.UsuarioPO;
+import org.iot.business.model.dataaccess.UserPO;
 
 /**
  * @author loboo
@@ -18,9 +18,9 @@ import org.iot.business.model.dataaccess.UsuarioPO;
  */
 @Repository
 @Transactional(readOnly = true)
-public interface DataAccessUser extends JpaRepository<UsuarioPO, Integer>{
+public interface UserDao extends JpaRepository<UserPO, Integer>{
 	
-	@Query("select user from UsuarioPO user WHERE user.usuario =:usuario")
-    public UsuarioPO findByUsuario(@Param("usuario") String usuario);
+	@Query("select userpo from UserPO userpo WHERE userpo.user =:user")
+    public UserPO findByUser(@Param("user") String user);
 
 }

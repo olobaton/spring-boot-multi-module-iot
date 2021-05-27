@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iot.business.logic.LogicPersona;
-import org.iot.business.model.logic.LogicPersonaDTO;
+import org.iot.business.model.logic.PersonalDataLogicDTO;
 import org.iot.services.RestControllerPerson;
 import org.iot.services.model.PersonRequest;
 import org.iot.services.model.PersonResponse;
@@ -49,11 +49,11 @@ public class RestControllerPersonImpl implements RestControllerPerson {
 	public ResponseEntity<?> obtener ()  throws Exception {	
 		
 		logger.info("URL: /persona - GET - Method get");
-		List<LogicPersonaDTO> logicpersonapo = null;
+		List<PersonalDataLogicDTO> logicpersonapo = null;
 		List<PersonResponse> restpersonapo = new ArrayList<PersonResponse>();		
 		logicpersonapo = logicpersona.findAll();
 		if (logicpersonapo != null && logicpersonapo.size() != 0) {
-			for(LogicPersonaDTO obj: logicpersonapo) {
+			for(PersonalDataLogicDTO obj: logicpersonapo) {
 				PersonResponse rest = new PersonResponse();
 				rest.setId(obj.getId());
 				rest.setNombre(obj.getNombre());
@@ -69,7 +69,7 @@ public class RestControllerPersonImpl implements RestControllerPerson {
 		logger.info("URL: /persona - POST - Method save // @RequestBody");
 		
 		PersonResponse restpersonapo = new PersonResponse();
-		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
+		PersonalDataLogicDTO logicpersonapo = new PersonalDataLogicDTO();
 		
 		logicpersonapo.setNombre(p.getNombre());	
 		logicpersonapo.setUsuario(p.getUsuario());
@@ -87,7 +87,7 @@ public class RestControllerPersonImpl implements RestControllerPerson {
 	public ResponseEntity<?> modificar (@RequestBody PersonRequest p, @PathVariable("id_personar") Integer id) throws Exception {
 		logger.info("URL: /persona - PUT - Method modify // @RequestBody");
 		PersonResponse restpersonapo = new PersonResponse();
-		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
+		PersonalDataLogicDTO logicpersonapo = new PersonalDataLogicDTO();
 		
 		logicpersonapo.setId(id);
 		logicpersonapo.setNombre(p.getNombre());		

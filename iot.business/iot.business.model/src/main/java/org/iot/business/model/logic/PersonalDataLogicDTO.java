@@ -7,7 +7,7 @@ package org.iot.business.model.logic;
  * @author loboo
  *
  */
-public class LogicPersonaDTO {
+public class PersonalDataLogicDTO {
 	
 	Integer id;	
 	String nombre;

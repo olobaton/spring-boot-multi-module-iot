@@ -9,14 +9,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
-import org.iot.business.dataaccess.DataAccessPersona;
+import org.iot.business.dataaccess.PersonalDataDao;
 import org.iot.business.logic.LogicPersona;
-import org.iot.business.model.dataaccess.DataPersonaPO;
-import org.iot.business.model.dataaccess.UsuarioPO;
+import org.iot.business.model.dataaccess.PersonalDataPO;
+import org.iot.business.model.dataaccess.UserPO;
 import org.iot.business.model.exception.ElementAlreadyExistsException;
 import org.iot.business.model.exception.NoSuchElementFoundException;
 import org.iot.business.model.exception.ServiceException;
-import org.iot.business.model.logic.LogicPersonaDTO;
+import org.iot.business.model.logic.PersonalDataLogicDTO;
 
 /**
  * @author loboo
@@ -26,21 +26,21 @@ import org.iot.business.model.logic.LogicPersonaDTO;
 public class LogicPersonaImpl implements LogicPersona {
 
 	@Autowired
-	private DataAccessPersona dataaccesspersona;
+	private PersonalDataDao dataaccesspersona;
 
 	@Override
-	public List<LogicPersonaDTO> findAll() throws ServiceException {
-		LogicPersonaDTO logicpersonapo = null;
-		ArrayList<LogicPersonaDTO> list = null;
-		list = new ArrayList<LogicPersonaDTO>();
+	public List<PersonalDataLogicDTO> findAll() throws ServiceException {
+		PersonalDataLogicDTO logicpersonapo = null;
+		ArrayList<PersonalDataLogicDTO> list = null;
+		list = new ArrayList<PersonalDataLogicDTO>();
 		try {
-			List<DataPersonaPO> listadata = dataaccesspersona.findAll();
+			List<PersonalDataPO> listadata = dataaccesspersona.findAll();
 			if (listadata.size() != 0) {
-				for (DataPersonaPO obj : listadata) {
-					logicpersonapo = new LogicPersonaDTO();
+				for (PersonalDataPO obj : listadata) {
+					logicpersonapo = new PersonalDataLogicDTO();
 					logicpersonapo.setId(obj.getId());
 					logicpersonapo.setNombre(obj.getNombre());
-					logicpersonapo.setUsuario(obj.getUsuario().getUsuario());
+					logicpersonapo.setUsuario(obj.getUser().getUser());
 					logicpersonapo.setPassword("Confidencial");
 					list.add(logicpersonapo);
 				}
@@ -53,23 +53,23 @@ public class LogicPersonaImpl implements LogicPersona {
 	}
 
 	@Override
-	public LogicPersonaDTO save(LogicPersonaDTO p) throws ServiceException {
-		DataPersonaPO datapersonapo = new DataPersonaPO();
-		UsuarioPO usuaripo = new UsuarioPO();
-		LogicPersonaDTO logicpersonapo = new LogicPersonaDTO();
+	public PersonalDataLogicDTO save(PersonalDataLogicDTO p) throws ServiceException {
+		PersonalDataPO datapersonapo = new PersonalDataPO();
+		UserPO usuaripo = new UserPO();
+		PersonalDataLogicDTO logicpersonapo = new PersonalDataLogicDTO();
 
 		try {
-			DataPersonaPO existingpersona = dataaccesspersona.findCustomByUserName(p.getUsuario());
+			PersonalDataPO existingpersona = dataaccesspersona.findCustomByUserName(p.getUsuario());
 			if (existingpersona == null) {
 				usuaripo.setPassword(p.getPassword());
-				usuaripo.setUsuario(p.getUsuario());
-				datapersonapo.setUsuario(usuaripo);
+				usuaripo.setUser(p.getUsuario());
+				datapersonapo.setUser(usuaripo);
 				datapersonapo.setNombre(p.getNombre());
 				datapersonapo = dataaccesspersona.saveAndFlush(datapersonapo);
 				if (datapersonapo != null) {
 					logicpersonapo.setId(datapersonapo.getId());
 					logicpersonapo.setNombre(datapersonapo.getNombre());
-					logicpersonapo.setUsuario(datapersonapo.getUsuario().getUsuario());
+					logicpersonapo.setUsuario(datapersonapo.getUser().getUser());
 				}
 			} else {
 				throw new ElementAlreadyExistsException("User exists :" + p.getUsuario());
@@ -86,25 +86,25 @@ public class LogicPersonaImpl implements LogicPersona {
 	}
 
 	@Override
-	public LogicPersonaDTO modificar(LogicPersonaDTO p) throws ServiceException {
+	public PersonalDataLogicDTO modificar(PersonalDataLogicDTO p) throws ServiceException {
 
-		DataPersonaPO datapersonapo = new DataPersonaPO();
-		LogicPersonaDTO logicpersonadto = new LogicPersonaDTO();
-		UsuarioPO userpo;
+		PersonalDataPO datapersonapo = new PersonalDataPO();
+		PersonalDataLogicDTO logicpersonadto = new PersonalDataLogicDTO();
+		UserPO userpo;
 		try {
-			DataPersonaPO replicateduser = dataaccesspersona.findCustomByUserName(p.getUsuario());
+			PersonalDataPO replicateduser = dataaccesspersona.findCustomByUserName(p.getUsuario());
 			if (replicateduser == null) {
-				DataPersonaPO existingpersona = dataaccesspersona.findCustomById(p.getId())
+				PersonalDataPO existingpersona = dataaccesspersona.findCustomById(p.getId())
 						.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + p.getId()));
-				userpo = existingpersona.getUsuario();
-				userpo.setUsuario(p.getUsuario());
+				userpo = existingpersona.getUser();
+				userpo.setUser(p.getUsuario());
 				existingpersona.setNombre(p.getNombre());
-				existingpersona.setUsuario(userpo);
+				existingpersona.setUser(userpo);
 				datapersonapo = dataaccesspersona.saveAndFlush(existingpersona);
 				if (datapersonapo != null) {
 					logicpersonadto.setId(datapersonapo.getId());
 					logicpersonadto.setNombre(datapersonapo.getNombre());
-					logicpersonadto.setUsuario(datapersonapo.getUsuario().getUsuario());
+					logicpersonadto.setUsuario(datapersonapo.getUser().getUser());
 				}
 			} else {
 				throw new ElementAlreadyExistsException("User exists :" + p.getUsuario());
@@ -124,7 +124,7 @@ public class LogicPersonaImpl implements LogicPersona {
 	@Override
 	public void eliminar(Integer id) throws ServiceException {
 		try {
-			DataPersonaPO existingpersona = dataaccesspersona.findCustomById(id)
+			PersonalDataPO existingpersona = dataaccesspersona.findCustomById(id)
 					.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + id));
 			dataaccesspersona.deleteById(existingpersona.getId());
 		} catch (NoSuchElementFoundException e) {

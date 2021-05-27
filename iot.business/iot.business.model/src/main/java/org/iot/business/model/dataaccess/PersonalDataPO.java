@@ -3,18 +3,16 @@
  */
 package org.iot.business.model.dataaccess;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.sun.istack.NotNull;
 
 /**
  * @author loboo
@@ -22,20 +20,20 @@ import com.sun.istack.NotNull;
  */
 
 @Entity
-@Table(name = "persona")
-public class DataPersonaPO {
+@Table(name = "tbl_personal_data")
+public class PersonalDataPO {
 	
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id
-	@Column(name="id")
-	Integer id;	
+	@Column(name="id_personal_data")
+	private Integer id;	
 	
 	@Column(name="nombre", nullable = false, length = 50)
-	String nombre;
+	private String nombre;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fk_id_usuario", referencedColumnName = "id")
-	UsuarioPO usuario;
+	@OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
+	private UserPO user;
 	
 	public Integer getId() {
 		return id;
@@ -49,11 +47,11 @@ public class DataPersonaPO {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	public UsuarioPO getUsuario() {
-		return usuario;
+	public UserPO getUser() {
+		return user;
 	}
-	public void setUsuario(UsuarioPO usuario) {
-		this.usuario = usuario;
+	public void setUser(UserPO user) {
+		this.user = user;
 	}
 	
 }

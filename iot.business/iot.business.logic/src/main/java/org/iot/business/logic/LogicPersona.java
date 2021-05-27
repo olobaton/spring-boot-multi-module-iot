@@ -6,7 +6,7 @@ package org.iot.business.logic;
 import java.util.List;
 
 import org.iot.business.model.exception.ServiceException;
-import org.iot.business.model.logic.LogicPersonaDTO;
+import org.iot.business.model.logic.PersonalDataLogicDTO;
 import org.springframework.stereotype.Service;
 
 
@@ -19,9 +19,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface LogicPersona {
 	
-	public List<LogicPersonaDTO> findAll() throws ServiceException;
-	public LogicPersonaDTO save(LogicPersonaDTO p) throws ServiceException;
+	public List<PersonalDataLogicDTO> findAll() throws ServiceException;
+	public PersonalDataLogicDTO save(PersonalDataLogicDTO p) throws ServiceException;
 	public void eliminar(Integer id) throws ServiceException;
-	public LogicPersonaDTO modificar(LogicPersonaDTO p) throws ServiceException;
+	public PersonalDataLogicDTO modificar(PersonalDataLogicDTO p) throws ServiceException;
 
 }
