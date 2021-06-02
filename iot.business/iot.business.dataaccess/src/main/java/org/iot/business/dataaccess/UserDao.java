@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 
 import org.iot.business.model.dataaccess.UserPO;
 
@@ -21,6 +22,6 @@ import org.iot.business.model.dataaccess.UserPO;
 public interface UserDao extends JpaRepository<UserPO, Integer>{
 	
 	@Query("select userpo from UserPO userpo WHERE userpo.username =:user")
-    public UserPO findByUser(@Param("user") String user);
+    public Optional<UserPO> findByUser(@Param("user") String user);
 
 }

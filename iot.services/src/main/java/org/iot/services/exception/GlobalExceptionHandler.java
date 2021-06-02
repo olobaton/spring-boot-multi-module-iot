@@ -6,7 +6,7 @@ package org.iot.services.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,15 +40,6 @@ public class GlobalExceptionHandler {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.CONFLICT.value(),
 				HttpStatus.CONFLICT.getReasonPhrase(), exception.getError(), request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
-	}
-
-	// handling specific UsernameNotFoundException
-	@ExceptionHandler(UsernameNotFoundException.class)
-	public ResponseEntity<?> UsernameNotFound(UsernameNotFoundException exception, WebRequest request) {
-		logger.warn(exception.getClass() + " - " + exception.getCause() + " - " + exception.getMessage());
-		ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST.value(),
-				HttpStatus.BAD_REQUEST.getReasonPhrase(), exception.getMessage(), request.getDescription(false));
-		return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
 	}
 
 	// handling specific NoSuchElementFoundException

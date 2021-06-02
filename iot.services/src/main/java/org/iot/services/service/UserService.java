@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
 /**
  * @author loboo
  *
@@ -27,16 +26,13 @@ public class UserService implements UserDetailsService {
 
 	@Autowired
 	private UserDao user;
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserPO response = user.findByUser(username);
-		if (response == null) {
-			throw new UsernameNotFoundException("User not found with username: " + username);
-		}
+		UserPO response = user.findByUser(username).orElseThrow( () -> new UsernameNotFoundException("User not found with username: " + username));
 		List<GrantedAuthority> roles = new ArrayList<>();
 		roles.add(new SimpleGrantedAuthority("ADMIN"));
-		UserDetails userDet = new User(response.getUsername(),response.getUserpassword(), roles);
+		UserDetails userDet = new User(response.getUsername(), response.getUserpassword(), roles);
 		return userDet;
 	}
 
