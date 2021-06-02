@@ -3,6 +3,9 @@
  */
 package org.iot.business.model.dataaccess;
 
+import java.util.Date;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +15,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 
 /**
@@ -26,32 +33,83 @@ public class PersonalDataPO {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id
 	@Column(name="id_personal_data")
-	private Integer id;	
+	private Integer idpersonaldata;	
 	
-	@Column(name="nombre", nullable = false, length = 50)
-	private String nombre;
+	@Column(name="first_name", nullable = false, length = 50)
+	private String firstname;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@Column(name="last_name", nullable = false, length = 50)
+	private String lastname;
+	
+	@Column(name="first_surname", nullable = false, length = 50)
+	private String firstsurname;
+	
+	@Column(name="last_surname", nullable = false, length = 50)
+	private String lastsurname;
+	
+	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "created", nullable = false)
+	private Date created;
+	
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
 	private UserPO user;
-	
-	public Integer getId() {
-		return id;
+
+	public Integer getIdpersonaldata() {
+		return idpersonaldata;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+
+	public void setIdpersonaldata(Integer idpersonaldata) {
+		this.idpersonaldata = idpersonaldata;
 	}
-	public String getNombre() {
-		return nombre;
+
+	public String getFirstname() {
+		return firstname;
 	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
 	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	public String getFirstsurname() {
+		return firstsurname;
+	}
+
+	public void setFirstsurname(String firstsurname) {
+		this.firstsurname = firstsurname;
+	}
+
+	public String getLastsurname() {
+		return lastsurname;
+	}
+
+	public void setLastsurname(String lastsurname) {
+		this.lastsurname = lastsurname;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
 	public UserPO getUser() {
 		return user;
 	}
+
 	public void setUser(UserPO user) {
 		this.user = user;
-	}
+	}	
 	
 }

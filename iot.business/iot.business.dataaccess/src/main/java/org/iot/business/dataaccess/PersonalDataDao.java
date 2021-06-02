@@ -21,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface PersonalDataDao extends JpaRepository<PersonalDataPO, Integer> {
 	
-	@Query("select personaldatapo from PersonalDataPO personaldatapo INNER JOIN personaldatapo.user WHERE personaldatapo.id =:id")
+	@Query("select personaldatapo from PersonalDataPO personaldatapo INNER JOIN personaldatapo.user WHERE personaldatapo.idpersonaldata =:id")
     public Optional<PersonalDataPO> findCustomById(@Param("id") Integer id);
 	
-	@Query("select personaldatapo from PersonalDataPO personaldatapo INNER JOIN personaldatapo.user as user WHERE user.user =:user")
-	public PersonalDataPO findCustomByUserName(@Param("user") String user);
+	@Query("select personaldatapo from PersonalDataPO personaldatapo INNER JOIN personaldatapo.user as user WHERE user.username =:user")
+	public Optional<PersonalDataPO> findCustomByUserName(@Param("user") String user);
 }

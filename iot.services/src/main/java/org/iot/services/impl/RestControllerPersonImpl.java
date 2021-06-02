@@ -21,11 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iot.business.logic.LogicPersona;
-import org.iot.business.model.logic.PersonalDataLogicDTO;
+import org.iot.business.logic.PersonalDataBo;
+import org.iot.business.model.exception.ServiceException;
+import org.iot.business.model.exception.WebException;
+import org.iot.business.model.logic.PersonalDataDTO;
+import org.iot.business.model.logic.UserDTO;
 import org.iot.services.RestControllerPerson;
-import org.iot.services.model.PersonRequest;
-import org.iot.services.model.PersonResponse;
+import org.iot.services.mapper.PersonalDataMapperResponse;
+import org.iot.services.model.request.PersonalDataRequestDTO;
+import org.iot.services.model.response.PersonalDataResponseDTO;
 
 /**
  * @author loboo
@@ -38,7 +42,7 @@ import org.iot.services.model.PersonResponse;
 public class RestControllerPersonImpl implements RestControllerPerson {
 		
 	@Autowired
-	LogicPersona logicpersona;
+	PersonalDataBo logicpersona;
 	
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
@@ -46,66 +50,80 @@ public class RestControllerPersonImpl implements RestControllerPerson {
 	private static final Logger logger = LogManager.getLogger(RestControllerPersonImpl.class);
 	
 	@GetMapping()
-	public ResponseEntity<?> obtener ()  throws Exception {	
+	public ResponseEntity<?> getAll ()  throws WebException {	
 		
 		logger.info("URL: /persona - GET - Method get");
-		List<PersonalDataLogicDTO> logicpersonapo = null;
-		List<PersonResponse> restpersonapo = new ArrayList<PersonResponse>();		
-		logicpersonapo = logicpersona.findAll();
-		if (logicpersonapo != null && logicpersonapo.size() != 0) {
-			for(PersonalDataLogicDTO obj: logicpersonapo) {
-				PersonResponse rest = new PersonResponse();
-				rest.setId(obj.getId());
-				rest.setNombre(obj.getNombre());
-				rest.setUsuario(obj.getUsuario());
-				restpersonapo.add(rest);		
-			}			
-		}		
-		return new ResponseEntity<>(restpersonapo, HttpStatus.OK);
+		List<PersonalDataDTO> personaldatadto = null;
+		List<PersonalDataResponseDTO> personaldataresponse = new ArrayList<PersonalDataResponseDTO>();		
+		try {
+			personaldatadto = logicpersona.findAll();
+			if (personaldatadto != null && personaldatadto.size() != 0) {
+				for(PersonalDataDTO obj: personaldatadto) {
+					personaldataresponse.add(PersonalDataMapperResponse.INSTANCE.PersonalDataDTOToPersonalDataResponseDTO(obj));		
+				}			
+			}					
+		} catch (ServiceException e) {
+			throw new WebException(e.getMessage(), e.getCause() , e.getClazz());
+		}
+		return new ResponseEntity<>(personaldataresponse, HttpStatus.OK);
 	}
 	
 	@PostMapping()
-	public ResponseEntity<?> crear (@RequestBody PersonRequest p) throws Exception {
+	public ResponseEntity<?> save (@RequestBody PersonalDataRequestDTO personaldatarequest) throws WebException {
 		logger.info("URL: /persona - POST - Method save // @RequestBody");
 		
-		PersonResponse restpersonapo = new PersonResponse();
-		PersonalDataLogicDTO logicpersonapo = new PersonalDataLogicDTO();
-		
-		logicpersonapo.setNombre(p.getNombre());	
-		logicpersonapo.setUsuario(p.getUsuario());
-		logicpersonapo.setPassword(bcrypt.encode(p.getPassword()));
-		logicpersonapo = logicpersona.save(logicpersonapo);
-		if (logicpersonapo != null) {
-			restpersonapo.setId(logicpersonapo.getId());
-			restpersonapo.setNombre(logicpersonapo.getNombre());
-			restpersonapo.setUsuario(logicpersonapo.getUsuario());
-		}	
-		return new ResponseEntity<>(restpersonapo, HttpStatus.CREATED);
+		PersonalDataResponseDTO personaldataresponse = new PersonalDataResponseDTO();
+		PersonalDataDTO personaldatadto = new PersonalDataDTO();
+		UserDTO userdto = new UserDTO();
+		try {
+			personaldatadto.setFirstname(personaldatarequest.getFirstname());	
+			personaldatadto.setLastname(personaldatarequest.getLastname());
+			personaldatadto.setFirstsurname(personaldatarequest.getFirstsurname());
+			personaldatadto.setLastsurname(personaldatarequest.getLastsurname());
+			userdto.setUsername(personaldatarequest.getUsername());
+			userdto.setUserpassword(bcrypt.encode(personaldatarequest.getUserpassword()));
+			personaldatadto.setUser(userdto);
+			personaldatadto = logicpersona.save(personaldatadto);
+			personaldataresponse = PersonalDataMapperResponse.INSTANCE.PersonalDataDTOToPersonalDataResponseDTO(personaldatadto);			
+		}catch (ServiceException e) {
+			throw new WebException(e.getMessage(), e.getCause() , e.getClazz());
+		}
+		return new ResponseEntity<>(personaldataresponse, HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value = "/{id_personar}")
-	public ResponseEntity<?> modificar (@RequestBody PersonRequest p, @PathVariable("id_personar") Integer id) throws Exception {
+	public ResponseEntity<?> modify (@RequestBody PersonalDataRequestDTO personaldatarequest, @PathVariable("id_personar") Integer id) throws WebException {
 		logger.info("URL: /persona - PUT - Method modify // @RequestBody");
-		PersonResponse restpersonapo = new PersonResponse();
-		PersonalDataLogicDTO logicpersonapo = new PersonalDataLogicDTO();
+		PersonalDataResponseDTO personaldataresponse = new PersonalDataResponseDTO();
+		PersonalDataDTO personaldatadto = new PersonalDataDTO();
+		UserDTO userdto = new UserDTO();
 		
-		logicpersonapo.setId(id);
-		logicpersonapo.setNombre(p.getNombre());		
-		logicpersonapo.setUsuario(p.getUsuario());
-		logicpersonapo = logicpersona.modificar(logicpersonapo);
-		if (logicpersonapo != null) {
-			restpersonapo.setId(logicpersonapo.getId());
-			restpersonapo.setNombre(logicpersonapo.getNombre());
-			restpersonapo.setUsuario(logicpersonapo.getUsuario());
-		}		
-		return new ResponseEntity<>(restpersonapo, HttpStatus.OK);
+		try {
+			personaldatadto.setFirstname(personaldatarequest.getFirstname());	
+			personaldatadto.setLastname(personaldatarequest.getLastname());
+			personaldatadto.setFirstsurname(personaldatarequest.getFirstsurname());
+			personaldatadto.setLastsurname(personaldatarequest.getLastsurname());
+			userdto.setUsername(personaldatarequest.getUsername());
+			personaldatadto = logicpersona.modificar(personaldatadto);
+			personaldataresponse = PersonalDataMapperResponse.INSTANCE.PersonalDataDTOToPersonalDataResponseDTO(personaldatadto);	
+			
+		} catch (ServiceException e) {
+			throw new WebException(e.getMessage(), e.getCause() , e.getClazz());
+		}
+		
+		return new ResponseEntity<>(personaldataresponse, HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<?> eliminar (@PathVariable("id") Integer id) throws Exception {
+	public ResponseEntity<?> delete (@PathVariable("id") Integer id) throws WebException {
 		logger.info("URL: /persona - DELETE - Method delete");
-		logicpersona.eliminar(id);
-		return new ResponseEntity<>(HttpStatus.OK);
+		try {
+			logicpersona.eliminar(id);
+		} catch (ServiceException e) {
+			throw new WebException(e.getMessage(), e.getCause() , e.getClazz());
+		}
+		
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 

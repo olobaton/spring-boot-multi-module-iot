@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.iot.services.model;
+package org.iot.services.model.response;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author loboo
  *
  */
-public class JwtResponse implements Serializable {
+public class JwtResponseDTO implements Serializable {
 
 	/**
 	 * 
@@ -17,7 +17,7 @@ public class JwtResponse implements Serializable {
 	private static final long serialVersionUID = 678400515256919431L;
 	private final String jwttoken;
 
-	public JwtResponse(String jwttoken) {
+	public JwtResponseDTO(String jwttoken) {
 		this.jwttoken = jwttoken;
 	}
 

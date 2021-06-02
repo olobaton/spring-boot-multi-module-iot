@@ -20,7 +20,7 @@ import org.iot.business.model.dataaccess.UserPO;
 @Transactional(readOnly = true)
 public interface UserDao extends JpaRepository<UserPO, Integer>{
 	
-	@Query("select userpo from UserPO userpo WHERE userpo.user =:user")
+	@Query("select userpo from UserPO userpo WHERE userpo.username =:user")
     public UserPO findByUser(@Param("user") String user);
 
 }

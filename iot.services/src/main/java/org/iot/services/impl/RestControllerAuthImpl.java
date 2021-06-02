@@ -24,10 +24,11 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iot.business.model.exception.ServiceException;
+import org.iot.business.model.exception.WebException;
 import org.iot.services.RestControllerAuth;
 import org.iot.services.config.jwt.JwtTokenUtil;
-import org.iot.services.model.JwtResponse;
-import org.iot.services.model.UserRequest;
+import org.iot.services.model.request.UserRequestDTO;
+import org.iot.services.model.response.JwtResponseDTO;
 import org.iot.services.service.UserService;
 
 
@@ -53,20 +54,20 @@ public class RestControllerAuthImpl implements RestControllerAuth {
 	private static final Logger logger = LogManager.getLogger(RestControllerAuthImpl.class);
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> auth (@RequestBody UserRequest p) throws ServiceException {
+	public ResponseEntity<?> auth (@RequestBody UserRequestDTO userrequestdto) throws WebException {
 		
 		logger.info("URL: /auth - POST - Method auth // @RequestBody");
 		
 		String token = null;
 		try {
-			authenticate(p.getUsuario(), p.getPassword());
-			final UserDetails user = userDetailsService.loadUserByUsername(p.getUsuario());
+			authenticate(userrequestdto.getUsername(), userrequestdto.getUserpassword());
+			final UserDetails user = userDetailsService.loadUserByUsername(userrequestdto.getUsername());
 			token = jwtTokenUtil.generateToken(user);
 			
 		} catch (ServiceException e) {
-			throw new ServiceException("uncontrolled error - auth", e);
+			throw new WebException(e.getMessage(), e.getCause() , e.getClazz());
 		}		
-		return new ResponseEntity<>(new JwtResponse(token), HttpStatus.OK);
+		return new ResponseEntity<>(new JwtResponseDTO(token), HttpStatus.OK);
 	}
 	
 	private void authenticate(String username, String password) throws ServiceException {

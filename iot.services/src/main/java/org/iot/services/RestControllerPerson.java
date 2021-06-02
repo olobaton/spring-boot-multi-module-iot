@@ -3,13 +3,11 @@
  */
 package org.iot.services;
 
-import java.util.List;
-
+import org.iot.business.model.exception.WebException;
+import org.iot.services.model.request.PersonalDataRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import org.iot.services.model.PersonRequest;
 
 /**
  * @author loboo
@@ -17,12 +15,12 @@ import org.iot.services.model.PersonRequest;
  */
 public interface RestControllerPerson {
 	
-	public ResponseEntity<?> obtener () throws Exception;;
+	public ResponseEntity<?> getAll () throws WebException;;
 	
-	public ResponseEntity<?> crear (@RequestBody PersonRequest p) throws Exception;
+	public ResponseEntity<?> save (@RequestBody PersonalDataRequestDTO p) throws WebException;
 	
-	public ResponseEntity<?> modificar (@RequestBody PersonRequest p, @PathVariable("id_persona") Integer id) throws Exception;
+	public ResponseEntity<?> modify (@RequestBody PersonalDataRequestDTO p, @PathVariable("id_persona") Integer id) throws WebException;
 	
-	public ResponseEntity<?> eliminar (@PathVariable("id") Integer id) throws Exception;
+	public ResponseEntity<?> delete (@PathVariable("id") Integer id) throws WebException;
 
 }

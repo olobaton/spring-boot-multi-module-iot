@@ -3,11 +3,10 @@
  */
 package org.iot.services;
 
+import org.iot.business.model.exception.WebException;
+import org.iot.services.model.request.UserRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
-import org.iot.services.model.UserRequest;
 
 /**
  * @author loboo
@@ -15,6 +14,6 @@ import org.iot.services.model.UserRequest;
  */
 public interface RestControllerAuth {
 	
-	public ResponseEntity<?> auth (@RequestBody UserRequest p) throws Exception;
+	public ResponseEntity<?> auth (@RequestBody UserRequestDTO p) throws WebException;
 
 }
