@@ -34,7 +34,7 @@ public class PersonalDataBoImpl implements PersonalDataBo {
 	public List<PersonalDataDTO> findAll() throws ServiceException {
 		ArrayList<PersonalDataDTO> personaldatadto = new ArrayList<PersonalDataDTO>();
 		try {
-			List<PersonalDataPO> listadata = dataaccesspersona.findAll();
+			List<PersonalDataPO> listadata = dataaccesspersona.getAllUsersAndRoles();
 			if (listadata.size() != 0) {
 				for (PersonalDataPO obj : listadata) {
 					personaldatadto.add(PersonMapperBo.INSTANCE.PersonalDataPOtoPersonalDataDTO(obj));					

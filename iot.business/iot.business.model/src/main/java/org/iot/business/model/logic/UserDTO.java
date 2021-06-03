@@ -4,6 +4,8 @@
 package org.iot.business.model.logic;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -17,6 +19,7 @@ public class UserDTO {
 	private String username;
 	private String userpassword;
 	private LocalDateTime created;
+	private List<RoleDTO> rol;
 	
 	public UserDTO() {
 		super();
@@ -52,6 +55,14 @@ public class UserDTO {
 
 	public void setCreated(LocalDateTime created) {
 		this.created = created;
+	}
+
+	public List<RoleDTO> getUserrol() {
+		return rol;
+	}
+
+	public void setUserrol(List<RoleDTO> rol) {
+		this.rol = rol;
 	}
 	
 	

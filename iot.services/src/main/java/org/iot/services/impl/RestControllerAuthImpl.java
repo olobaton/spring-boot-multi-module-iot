@@ -76,9 +76,11 @@ public class RestControllerAuthImpl implements RestControllerAuth {
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (DisabledException e) {
-			throw new ServiceException("USER_DISABLED", e);
+			throw new DisabledException("USER_DISABLED");
 		} catch (BadCredentialsException e) {
-			throw new ServiceException("INVALID_CREDENTIALS", e);
+			throw new BadCredentialsException("INVALID_CREDENTIALS");
+		} catch (Exception e) {
+			throw new ServiceException("Error authenticate", e, RestControllerAuthImpl.class);
 		}
 	}
 

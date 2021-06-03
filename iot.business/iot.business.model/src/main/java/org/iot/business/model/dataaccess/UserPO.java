@@ -4,6 +4,8 @@
 package org.iot.business.model.dataaccess;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -50,7 +52,7 @@ public class UserPO {
 	private PersonalDataPO person;
 	
 	@OneToMany(mappedBy="user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<UserRolePO> userrol;
+	private Set<UserRolePO> userrol = new HashSet<>();
 
 	public Integer getIduser() {
 		return iduser;
