@@ -19,7 +19,7 @@ public class UserDTO {
 	private String username;
 	private String userpassword;
 	private LocalDateTime created;
-	private List<RoleDTO> rol;
+	private Set<UserRoleDTO> userrole;
 	
 	public UserDTO() {
 		super();
@@ -57,14 +57,13 @@ public class UserDTO {
 		this.created = created;
 	}
 
-	public List<RoleDTO> getUserrol() {
-		return rol;
+	public Set<UserRoleDTO> getUserrole() {
+		return userrole;
 	}
 
-	public void setUserrol(List<RoleDTO> rol) {
-		this.rol = rol;
-	}
-	
+	public void setUserrole(Set<UserRoleDTO> userrole) {
+		this.userrole = userrole;
+	}	
 	
 
 }

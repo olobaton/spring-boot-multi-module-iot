@@ -31,7 +31,9 @@ public interface PersonalDataDao extends JpaRepository<PersonalDataPO, Integer> 
 	
 	@Query("from PersonalDataPO personaldatapo "
 			+ "INNER JOIN personaldatapo.user as personaluser "
-			+ "INNER JOIN personaluser.userrol as userroles "
-			+ "INNER JOIN userroles.rol")
+			+ "INNER JOIN personaluser.userrole as userroles "
+			+ "INNER JOIN userroles.role as role "
+			+ "INNER JOIN role.rolepermissions as rolepermissions "
+			+ "INNER JOIN rolepermissions.permissions as permissions")
 	public List<PersonalDataPO> getAllUsersAndRoles();
 }

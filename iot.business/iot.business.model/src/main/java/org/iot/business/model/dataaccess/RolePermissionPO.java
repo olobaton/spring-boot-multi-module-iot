@@ -4,8 +4,10 @@
 package org.iot.business.model.dataaccess;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.iot.business.model.util.HashMapConverter;
 
 /**
  * @author loboo
@@ -33,8 +36,9 @@ public class RolePermissionPO {
 	@EmbeddedId
 	private CompositeKeyRolePermissionPO idrolepermissions;
 
+	@Convert(converter = HashMapConverter.class)
 	@Column(name = "scope", nullable = false, columnDefinition = "TEXT")
-	private String permissionsname;
+	private PermissionsScopePO scope;
 
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
@@ -49,51 +53,63 @@ public class RolePermissionPO {
 	@MapsId("idrole")
 	@ManyToOne(fetch = FetchType.LAZY)	  
 	@JoinColumn(name = "fk_id_role", referencedColumnName = "id_role") 
-	private RolePO rol;
+	private RolePO role;
 	 
 
 	public RolePermissionPO() {
 		super();
 	}
 
+
 	public CompositeKeyRolePermissionPO getIdrolepermissions() {
 		return idrolepermissions;
 	}
+
 
 	public void setIdrolepermissions(CompositeKeyRolePermissionPO idrolepermissions) {
 		this.idrolepermissions = idrolepermissions;
 	}
 
-	public String getPermissionsname() {
-		return permissionsname;
+
+	public PermissionsScopePO getScope() {
+		return scope;
 	}
 
-	public void setPermissionsname(String permissionsname) {
-		this.permissionsname = permissionsname;
+
+	public void setScope(PermissionsScopePO scope) {
+		this.scope = scope;
 	}
+
 
 	public Date getCreated() {
 		return created;
 	}
 
+
 	public void setCreated(Date created) {
 		this.created = created;
 	}
+
 
 	public PermissionPO getPermissions() {
 		return permissions;
 	}
 
+
 	public void setPermissions(PermissionPO permissions) {
 		this.permissions = permissions;
 	}
 
-	public RolePO getRol() {
-		return rol;
+
+	public RolePO getRole() {
+		return role;
 	}
 
-	public void setRol(RolePO rol) {
-		this.rol = rol;
+
+	public void setRole(RolePO rol) {
+		this.role = rol;
 	}
+
+	
 
 }

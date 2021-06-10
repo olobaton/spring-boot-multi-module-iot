@@ -46,10 +46,10 @@ public class RolePO {
 	@Column(name = "created")
 	private Date created;
 
-	@OneToMany(mappedBy = "rol", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) 
-	private	Set<RolePermissionPO> rolepermissionspo;
+	@OneToMany(mappedBy = "role", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) 
+	private	Set<RolePermissionPO> rolepermissions;
 	
-	@OneToMany(mappedBy = "rol", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) 
+	@OneToMany(mappedBy = "role", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) 
 	private	Set<UserRolePO> userrol = new HashSet<>();
 	 
 
@@ -57,13 +57,13 @@ public class RolePO {
 		super();
 	}
 
-	public RolePO(Integer idrole, String rolename, Date created, Set<RolePermissionPO> rolepermissionspo,
+	public RolePO(Integer idrole, String rolename, Date created, Set<RolePermissionPO> rolepermissions,
 			Set<UserRolePO> userrol) {
 		super();
 		this.idrole = idrole;
 		this.rolename = rolename;
 		this.created = created;
-		this.rolepermissionspo = rolepermissionspo;
+		this.rolepermissions = rolepermissions;
 		this.userrol = userrol;
 	}
 
@@ -97,13 +97,13 @@ public class RolePO {
 	}
 
 
-	public Set<RolePermissionPO> getRolepermissionspo() {
-		return rolepermissionspo;
+	public Set<RolePermissionPO> getRolepermissions() {
+		return rolepermissions;
 	}
 
 
-	public void setRolepermissionspo(Set<RolePermissionPO> rolepermissionspo) {
-		this.rolepermissionspo = rolepermissionspo;
+	public void setRolepermissions(Set<RolePermissionPO> rolepermissionspo) {
+		this.rolepermissions = rolepermissionspo;
 	}
 
 

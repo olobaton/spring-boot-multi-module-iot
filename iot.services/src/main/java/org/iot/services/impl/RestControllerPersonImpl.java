@@ -99,11 +99,13 @@ public class RestControllerPersonImpl implements RestControllerPerson {
 		UserDTO userdto = new UserDTO();
 		
 		try {
+			personaldatadto.setIdpersonaldata(id);
 			personaldatadto.setFirstname(personaldatarequest.getFirstname());	
 			personaldatadto.setLastname(personaldatarequest.getLastname());
 			personaldatadto.setFirstsurname(personaldatarequest.getFirstsurname());
 			personaldatadto.setLastsurname(personaldatarequest.getLastsurname());
 			userdto.setUsername(personaldatarequest.getUsername());
+			personaldatadto.setUser(userdto);
 			personaldatadto = logicpersona.modificar(personaldatadto);
 			personaldataresponse = PersonalDataMapperResponse.INSTANCE.PersonalDataDTOToPersonalDataResponseDTO(personaldatadto);	
 			

@@ -4,7 +4,7 @@
 package org.iot.business.model.logic;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -16,6 +16,7 @@ public class RoleDTO {
 	private Integer idrole;
 	private String rolename;
 	private LocalDateTime created;
+	private Set<RolePermissionDTO> rolepermissions;
 	
 	public RoleDTO() {
 		super();
@@ -43,6 +44,14 @@ public class RoleDTO {
 
 	public void setCreated(LocalDateTime created) {
 		this.created = created;
+	}
+
+	public Set<RolePermissionDTO> getRolepermissions() {
+		return rolepermissions;
+	}
+
+	public void setRolepermissions(Set<RolePermissionDTO> rolepermissions) {
+		this.rolepermissions = rolepermissions;
 	}
 
 }

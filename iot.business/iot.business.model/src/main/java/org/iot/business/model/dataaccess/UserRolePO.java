@@ -45,7 +45,7 @@ public class UserRolePO {
 	@MapsId("idrole")
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_id_role", referencedColumnName = "id_role")
-	private RolePO rol;
+	private RolePO role;
 
 	public UserRolePO() {
 		super();
@@ -75,12 +75,12 @@ public class UserRolePO {
 		this.user = user;
 	}
 
-	public RolePO getRol() {
-		return rol;
+	public RolePO getRole() {
+		return role;
 	}
 
-	public void setRol(RolePO rol) {
-		this.rol = rol;
+	public void setRole(RolePO role) {
+		this.role = role;
 	}
 
 }

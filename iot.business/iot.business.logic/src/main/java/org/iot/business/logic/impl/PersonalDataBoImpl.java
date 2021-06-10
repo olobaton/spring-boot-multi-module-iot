@@ -15,6 +15,7 @@ import org.iot.business.logic.PersonalDataBo;
 import org.iot.business.logic.mapper.PersonMapperBo;
 import org.iot.business.model.dataaccess.PersonalDataPO;
 import org.iot.business.model.dataaccess.UserPO;
+import org.iot.business.model.exception.BodyRequestException;
 import org.iot.business.model.exception.ElementAlreadyExistsException;
 import org.iot.business.model.exception.NoSuchElementFoundException;
 import org.iot.business.model.exception.ServiceException;
@@ -86,11 +87,11 @@ public class PersonalDataBoImpl implements PersonalDataBo {
 		UserPO userpo = null;
 		PersonalDataDTO personaldatadtotemp = null;
 		try {
+			PersonalDataPO finduser = dataaccesspersona.findCustomById(personaldatadto.getIdpersonaldata())
+					.orElseThrow(() -> new NoSuchElementFoundException("Id no found:" + personaldatadto.getIdpersonaldata()));
 			PersonalDataPO existingpersona = dataaccesspersona.findCustomByUserName(personaldatadto.getUser().getUsername())
-					.orElse(new PersonalDataPO());
-			if (existingpersona.getIdpersonaldata() == null) {
-				PersonalDataPO finduser = dataaccesspersona.findCustomById(personaldatadto.getUser().getIduser())
-						.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + personaldatadto.getUser().getIduser()));
+					.orElseThrow(() -> new BodyRequestException("Body error - Parameters no send "));
+			if (existingpersona.getIdpersonaldata() == null) {				
 				userpo = finduser.getUser();
 				userpo.setUsername(personaldatadto.getUser().getUsername());
 				finduser.setFirstname(personaldatadto.getFirstname());
@@ -102,6 +103,8 @@ public class PersonalDataBoImpl implements PersonalDataBo {
 			}
 		} catch (NoSuchElementFoundException e) {
 			throw new NoSuchElementFoundException("controlled error - modify", e.getMessage(), PersonalDataBoImpl.class);
+		} catch (BodyRequestException e) {
+			throw new BodyRequestException("controlled error - modify", e.getMessage(), PersonalDataBoImpl.class);
 		} catch (ElementAlreadyExistsException e) {
 			throw new ElementAlreadyExistsException("controlled error - modify", e.getMessage(), PersonalDataBoImpl.class);
 		} catch (IncorrectResultSizeDataAccessException e) {
@@ -116,7 +119,7 @@ public class PersonalDataBoImpl implements PersonalDataBo {
 	public void eliminar(Integer id) throws ServiceException {
 		try {
 			PersonalDataPO existingpersona = dataaccesspersona.findCustomById(id)
-					.orElseThrow(() -> new NoSuchElementFoundException("No found id:" + id));
+					.orElseThrow(() -> new NoSuchElementFoundException("Id no found:" + id));
 			dataaccesspersona.deleteById(existingpersona.getIdpersonaldata());
 		} catch (NoSuchElementFoundException e) {
 			throw new NoSuchElementFoundException("controlled error - delete", e.getMessage(), PersonalDataBoImpl.class);

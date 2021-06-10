@@ -3,6 +3,7 @@
  */
 package org.iot.business.model.dataaccess;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -34,7 +35,7 @@ public class PermissionPO {
 	private String permissionsdescription;
 
 	@OneToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
-	private Set<RolePermissionPO> rolepermissionspo;
+	private Set<RolePermissionPO> rolepermissionspo = new HashSet<>();;
 
 	public Integer getIdpermissions() {
 		return idpermissions;
