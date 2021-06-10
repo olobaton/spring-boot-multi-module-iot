@@ -4,6 +4,7 @@
 package org.iot.services.mapper;
 
 import org.iot.business.model.logic.PersonalDataDTO;
+import org.iot.services.model.request.PersonalDataRequestDTO;
 import org.iot.services.model.response.PersonalDataResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappings;
@@ -21,5 +22,10 @@ public interface PersonalDataMapperResponse {
 	@Mappings({	})
 	
 	PersonalDataResponseDTO PersonalDataDTOToPersonalDataResponseDTO(PersonalDataDTO personaldatadto);
+	
+	
+	@Mappings({	})
+	
+	PersonalDataDTO PersonalDataRequestDTOToPersonalDataDTO (PersonalDataRequestDTO personaldatarequestdto);
 
 }

@@ -76,15 +76,13 @@ public class RestControllerPersonImpl implements RestControllerPerson {
 		PersonalDataDTO personaldatadto = new PersonalDataDTO();
 		UserDTO userdto = new UserDTO();
 		try {
-			personaldatadto.setFirstname(personaldatarequest.getFirstname());	
-			personaldatadto.setLastname(personaldatarequest.getLastname());
-			personaldatadto.setFirstsurname(personaldatarequest.getFirstsurname());
-			personaldatadto.setLastsurname(personaldatarequest.getLastsurname());
-			userdto.setUsername(personaldatarequest.getUsername());
-			userdto.setUserpassword(bcrypt.encode(personaldatarequest.getUserpassword()));
+			personaldatadto = PersonalDataMapperResponse.INSTANCE.PersonalDataRequestDTOToPersonalDataDTO(personaldatarequest);
+			userdto = personaldatadto.getUser();
+			userdto.setUserpassword(bcrypt.encode(personaldatarequest.getUser().getUserpassword()));
 			personaldatadto.setUser(userdto);
 			personaldatadto = logicpersona.save(personaldatadto);
-			personaldataresponse = PersonalDataMapperResponse.INSTANCE.PersonalDataDTOToPersonalDataResponseDTO(personaldatadto);			
+			personaldataresponse = PersonalDataMapperResponse.INSTANCE.
+					PersonalDataDTOToPersonalDataResponseDTO(personaldatadto);			
 		}catch (ServiceException e) {
 			throw new WebException(e.getMessage(), e.getCause() , e.getClazz());
 		}
@@ -104,7 +102,7 @@ public class RestControllerPersonImpl implements RestControllerPerson {
 			personaldatadto.setLastname(personaldatarequest.getLastname());
 			personaldatadto.setFirstsurname(personaldatarequest.getFirstsurname());
 			personaldatadto.setLastsurname(personaldatarequest.getLastsurname());
-			userdto.setUsername(personaldatarequest.getUsername());
+			userdto.setUsername(personaldatarequest.getUser().getUsername());
 			personaldatadto.setUser(userdto);
 			personaldatadto = logicpersona.modificar(personaldatadto);
 			personaldataresponse = PersonalDataMapperResponse.INSTANCE.PersonalDataDTOToPersonalDataResponseDTO(personaldatadto);	

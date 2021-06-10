@@ -32,6 +32,10 @@ public interface PersonMapperBo {
 
 	PersonalDataDTO PersonalDataPOtoPersonalDataDTO(PersonalDataPO personaldatapo);
 	
+	@Mappings({	})
+
+	PersonalDataPO PersonalDataDTOToPersonalDataPO(PersonalDataDTO personaldatapo);
+	
 
 	/*
 	 * @Named("convertDate") public static LocalDateTime convertObj(Date date)

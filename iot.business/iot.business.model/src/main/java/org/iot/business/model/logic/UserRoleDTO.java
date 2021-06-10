@@ -4,6 +4,7 @@
 package org.iot.business.model.logic;
 
 import java.time.LocalDateTime;
+
 /**
  * @author loboo
  *
@@ -13,7 +14,6 @@ public class UserRoleDTO {
 	/**
 	 * 
 	 */
-	
 	private LocalDateTime created;	
 	private RoleDTO role;
 	

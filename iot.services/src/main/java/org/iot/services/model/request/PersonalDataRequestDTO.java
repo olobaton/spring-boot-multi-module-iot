@@ -3,7 +3,13 @@
  */
 package org.iot.services.model.request;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
+import org.iot.services.util.LocalDateTimeDeserializer;
+import org.iot.services.util.LocalDateTimeSerializer;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author loboo
@@ -16,59 +22,67 @@ public class PersonalDataRequestDTO {
 	private String lastname;
 	private String firstsurname;
 	private String lastsurname;
-	private Integer iduser;
-	private String username;
-	private String userpassword;
 	
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)  
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	private LocalDateTime created;
+  
+	private UserRequestDTO user;
+
 	public Integer getIdpersonaldata() {
 		return idpersonaldata;
 	}
+
 	public void setIdpersonaldata(Integer idpersonaldata) {
 		this.idpersonaldata = idpersonaldata;
 	}
+
 	public String getFirstname() {
 		return firstname;
 	}
+
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
 	}
+
 	public String getLastname() {
 		return lastname;
 	}
+
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
+
 	public String getFirstsurname() {
 		return firstsurname;
 	}
+
 	public void setFirstsurname(String firstsurname) {
 		this.firstsurname = firstsurname;
 	}
+
 	public String getLastsurname() {
 		return lastsurname;
 	}
+
 	public void setLastsurname(String lastsurname) {
 		this.lastsurname = lastsurname;
 	}
-	public Integer getIduser() {
-		return iduser;
+
+	public LocalDateTime getCreated() {
+		return created;
 	}
-	public void setIduser(Integer iduser) {
-		this.iduser = iduser;
+
+	public void setCreated(LocalDateTime created) {
+		this.created = created;
 	}
-	public String getUsername() {
-		return username;
+
+	public UserRequestDTO getUser() {
+		return user;
 	}
-	public void setUsername(String username) {
-		this.username = username;
+
+	public void setUser(UserRequestDTO user) {
+		this.user = user;
 	}
-	public String getUserpassword() {
-		return userpassword;
-	}
-	public void setUserpassword(String userpassword) {
-		this.userpassword = userpassword;
-	}
-	
-	
 
 }

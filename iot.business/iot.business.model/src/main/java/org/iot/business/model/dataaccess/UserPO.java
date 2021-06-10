@@ -47,10 +47,10 @@ public class UserPO {
 	@Column(name = "created", nullable = false)
 	private Date created;
 	
-	@OneToOne(mappedBy="user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy="user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private PersonalDataPO person;
 	
-	@OneToMany(mappedBy="user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private Set<UserRolePO> userrole = new HashSet<>();
 
 	public Integer getIduser() {

@@ -4,17 +4,21 @@
 package org.iot.business.logic.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.iot.business.dataaccess.PersonalDataDao;
+import org.iot.business.dataaccess.UserRoleDao;
 import org.iot.business.logic.PersonalDataBo;
 import org.iot.business.logic.mapper.PersonMapperBo;
+import org.iot.business.model.dataaccess.CompositeKeyUserRolePO;
 import org.iot.business.model.dataaccess.PersonalDataPO;
 import org.iot.business.model.dataaccess.UserPO;
+import org.iot.business.model.dataaccess.UserRolePO;
 import org.iot.business.model.exception.BodyRequestException;
 import org.iot.business.model.exception.ElementAlreadyExistsException;
 import org.iot.business.model.exception.NoSuchElementFoundException;
@@ -29,13 +33,16 @@ import org.iot.business.model.logic.PersonalDataDTO;
 public class PersonalDataBoImpl implements PersonalDataBo {
 
 	@Autowired
-	private PersonalDataDao dataaccesspersona;
+	private PersonalDataDao personaldatadao;
+	
+	@Autowired
+	private UserRoleDao userrolepo;
 
 	@Override
 	public List<PersonalDataDTO> findAll() throws ServiceException {
 		ArrayList<PersonalDataDTO> personaldatadto = new ArrayList<PersonalDataDTO>();
 		try {
-			List<PersonalDataPO> listadata = dataaccesspersona.getAllUsersAndRoles();
+			List<PersonalDataPO> listadata = personaldatadao.getAllUsersAndRoles();
 			if (listadata.size() != 0) {
 				for (PersonalDataPO obj : listadata) {
 					personaldatadto.add(PersonMapperBo.INSTANCE.PersonalDataPOtoPersonalDataDTO(obj));					
@@ -50,23 +57,20 @@ public class PersonalDataBoImpl implements PersonalDataBo {
 
 	@Override
 	public PersonalDataDTO save(PersonalDataDTO personaldatadto) throws ServiceException {
-		PersonalDataPO personaldatapo = new PersonalDataPO();
-		UserPO userpo = new UserPO();
 
+		Set<UserRolePO> userrolpo = new HashSet<UserRolePO>();
+		UserPO userpo = new UserPO();
 		try {
-			PersonalDataPO existingpersona = dataaccesspersona.findCustomByUserName(personaldatadto.getUser().getUsername())
+			PersonalDataPO existingpersona = personaldatadao.findCustomByUserName(personaldatadto.getUser().getUsername())
 					.orElse(new PersonalDataPO());
-			if (existingpersona.getIdpersonaldata() == null) {
-				userpo.setUserpassword(personaldatadto.getUser().getUserpassword());
-				userpo.setUsername(personaldatadto.getUser().getUsername());
-				userpo.setCreated(new Date());
-				personaldatapo.setUser(userpo);
-				personaldatapo.setFirstname(personaldatadto.getFirstname());
-				personaldatapo.setFirstsurname(personaldatadto.getFirstsurname());
-				personaldatapo.setLastname(personaldatadto.getLastname());
-				personaldatapo.setLastsurname(personaldatadto.getLastsurname());
-				personaldatapo.setCreated(new Date());
-				personaldatadto = 	PersonMapperBo.INSTANCE.PersonalDataPOtoPersonalDataDTO(dataaccesspersona.saveAndFlush(personaldatapo));			
+			if (existingpersona.getIdpersonaldata() == null) {	
+				existingpersona = personaldatadao.saveAndFlush(PersonMapperBo.INSTANCE.PersonalDataDTOToPersonalDataPO(personaldatadto));	
+				userrolpo = completeUserRolePOSet(existingpersona.getUser());
+				userrolpo = new HashSet<UserRolePO>(userrolepo.saveAll(userrolpo));
+				userpo = existingpersona.getUser();
+				userpo.setUserrole(userrolpo);
+				existingpersona.setUser(userpo);
+				personaldatadto = PersonMapperBo.INSTANCE.PersonalDataPOtoPersonalDataDTO(existingpersona);
 			} else {
 				throw new ElementAlreadyExistsException("User exists :" + personaldatadto.getUser().getUsername());
 			}
@@ -87,16 +91,16 @@ public class PersonalDataBoImpl implements PersonalDataBo {
 		UserPO userpo = null;
 		PersonalDataDTO personaldatadtotemp = null;
 		try {
-			PersonalDataPO finduser = dataaccesspersona.findCustomById(personaldatadto.getIdpersonaldata())
+			PersonalDataPO finduser = personaldatadao.findCustomById(personaldatadto.getIdpersonaldata())
 					.orElseThrow(() -> new NoSuchElementFoundException("Id no found:" + personaldatadto.getIdpersonaldata()));
-			PersonalDataPO existingpersona = dataaccesspersona.findCustomByUserName(personaldatadto.getUser().getUsername())
+			PersonalDataPO existingpersona = personaldatadao.findCustomByUserName(personaldatadto.getUser().getUsername())
 					.orElseThrow(() -> new BodyRequestException("Body error - Parameters no send "));
 			if (existingpersona.getIdpersonaldata() == null) {				
 				userpo = finduser.getUser();
 				userpo.setUsername(personaldatadto.getUser().getUsername());
 				finduser.setFirstname(personaldatadto.getFirstname());
 				finduser.setUser(userpo);
-				personaldatapo = dataaccesspersona.saveAndFlush(finduser);
+				personaldatapo = personaldatadao.saveAndFlush(finduser);
 				personaldatadtotemp = 	PersonMapperBo.INSTANCE.PersonalDataPOtoPersonalDataDTO(personaldatapo);
 			} else {
 				throw new ElementAlreadyExistsException("User exists :" + personaldatadto.getUser().getUsername());
@@ -118,14 +122,46 @@ public class PersonalDataBoImpl implements PersonalDataBo {
 	@Override
 	public void eliminar(Integer id) throws ServiceException {
 		try {
-			PersonalDataPO existingpersona = dataaccesspersona.findCustomById(id)
+			PersonalDataPO existingpersona = personaldatadao.findCustomById(id)
 					.orElseThrow(() -> new NoSuchElementFoundException("Id no found:" + id));
-			dataaccesspersona.deleteById(existingpersona.getIdpersonaldata());
+			personaldatadao.deleteById(existingpersona.getIdpersonaldata());
 		} catch (NoSuchElementFoundException e) {
 			throw new NoSuchElementFoundException("controlled error - delete", e.getMessage(), PersonalDataBoImpl.class);
 		} catch (Exception e) {
 			throw new ServiceException("uncontrolled error - delete", e, PersonalDataBoImpl.class);
 		}
 	}
+	
+	protected Set<UserRolePO> completeUserRolePOSet(UserPO temp) {
+        if ( temp == null ) {
+            return null;
+        }
+        Set<UserRolePO> set = temp.getUserrole();
+        Set<UserRolePO> set1 = new HashSet<UserRolePO>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
+        for ( UserRolePO userRolePO : set ) {
+            set1.add( completeUserRolePO( userRolePO, temp ) );
+        }
+
+        return set1;
+    }
+	
+	protected UserRolePO completeUserRolePO(UserRolePO temp, UserPO userpo) {
+        if ( temp == null ) {
+            return null;
+        }
+
+        CompositeKeyUserRolePO compositekey = new CompositeKeyUserRolePO();
+        UserRolePO userrolpo = new UserRolePO();
+        userrolpo = temp;
+        
+        compositekey.setIdrole(temp.getRole().getIdrole());
+        compositekey.setIduser(userpo.getIduser());
+        
+        userrolpo.setUser(userpo);
+        
+        userrolpo.setIduserrol(compositekey);
+
+        return userrolpo;
+    }
 
 }

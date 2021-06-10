@@ -5,6 +5,7 @@ package org.iot.business.model.dataaccess;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -30,7 +31,7 @@ public class UserRolePO {
 	 * 
 	 */
 	@EmbeddedId
-	private CompositeKeyUserRolePO iduserrol;
+	private CompositeKeyUserRolePO iduserrol = new CompositeKeyUserRolePO();
 	
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
@@ -40,7 +41,7 @@ public class UserRolePO {
 	@MapsId("iduser")
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
-	private UserPO user;
+	private UserPO user = new UserPO();
 	
 	@MapsId("idrole")
 	@ManyToOne(fetch = FetchType.LAZY)
